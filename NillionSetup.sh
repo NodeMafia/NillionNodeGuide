@@ -31,13 +31,13 @@ fi
 
 # Pull the Nillion verifier Docker image
 echo "Pulling Nillion verifier docker image..."
-docker pull nillion/verifier:v1.0.0
+docker pull nillion/verifier:v1.0.1
 
 # Create directory for the Nillion Verifier
 mkdir -p nillion/verifier
 
 # Initialize the Verifier
-docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.0 initialise
+docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 initialise
 
 # Extract data from credentials.json
 JSON_FILE="./nillion/verifier/credentials.json"
@@ -86,4 +86,4 @@ done
 echo -e "\n\e[32mSynchronization complete!\e[0m"
 
 # Run the Verifier node
-docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.0 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
+docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
