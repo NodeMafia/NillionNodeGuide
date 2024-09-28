@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Проверка текущей директории
+cd /path/to/your/desired/directory || { echo "Failed to change directory"; exit 1; }
+
 # Node Mafia ASCII Art
 echo "
      __             _                        __  _        
@@ -30,8 +33,13 @@ case $option in
         if ! docker info > /dev/null 2>&1; then
             echo -e "\e[31mPermission denied: You don't have access to Docker.\e[0m"
             echo -e "\e[31mTrying to add user to the docker group...\e[0m"
-            sudo usermod -aG docker $USER
+            
+            # Try to add user to the docker group
+            sudo usermod -aG docker "$USER"
+
             echo -e "\e[32mUser added to the docker group. Please log out and log back in or restart the terminal.\e[0m"
+            echo -e "\e[32mOr you can run the script with 'sudo'.\e[0m"
+            
             exit 1
         else
             echo -e "\e[32mDocker is accessible. Proceeding...\e[0m"
@@ -45,24 +53,22 @@ case $option in
         mkdir -p nillion/verifier
 
         # Initialize the Verifier
-        docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 initialise
+        docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 initialise
 
         # Extract data from credentials.json
         JSON_FILE="./nillion/verifier/credentials.json"
         if [ -f "$JSON_FILE" ]; then
             echo "Extracting data from credentials.json..."
-            ADDRESS=$(jq -r '.address' $JSON_FILE)
-            PUBKEY=$(jq -r '.pub_key' $JSON_FILE)
+            ADDRESS=$(jq -r '.address' "$JSON_FILE")
+            PUBKEY=$(jq -r '.pub_key' "$JSON_FILE")
 
             # Combined output instructions
-            echo -e "\n\e[31mInstructions for use\e[0m"
-            echo -e "1. Go to the site: https://verifier.nillion.com/verifier and log in using your EVM wallet."
-            echo -e "2. Press 'Set Up For Linux' and go to step 5: 'Initialising the verifier'"
-            echo -e "\e[31mTo copy the information, highlight it with your cursor (do not press CTRL+C). The information will be copied after highlighting.\e[0m"
+            echo -e "\n\e[31mTo copy the information, highlight it with your cursor (do not press CTRL+C).\e[0m"
             echo -e "   \e[36mVerifier Account ID:\e[0m = $ADDRESS"
             echo -e "   \e[36mVerifier Public Key:\e[0m = $PUBKEY"
             echo -e "3. Go to the \e[33mNillion Faucet\e[0m and get tokens to the address: \e[36m$ADDRESS\e[0m"
             echo -e "   Visit: https://faucet.testnet.nillion.com"
+            echo ""
         else
             echo -e "\e[31mError: credentials.json not found!\e[0m"
             exit 1
@@ -89,7 +95,7 @@ case $option in
         echo -e "\n\e[32mSynchronization complete!\e[0m"
 
         # Run the Verifier node
-        docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
+        docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
         ;;
 
     2)
@@ -119,7 +125,7 @@ case $option in
 
         # Run the updated Verifier node
         echo "Starting the updated Nillion Verifier node..."
-        docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
+        docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
 
         echo "Node update complete and running on v1.0.1."
         ;;
@@ -149,21 +155,22 @@ case $option in
 
             3)
                 echo "Using Testnet RPC: KJNodes."
-                RPC_ENDPOINT="https://testnet.nillion.kjnodes.com/"
+                RPC_ENDPOINT="https://nillion-testnet.rpc.kjnodes.com/"
                 ;;
 
             4)
-                read -p "Enter your custom RPC URL: " RPC_ENDPOINT
-                echo "Using custom RPC endpoint: $RPC_ENDPOINT"
+                read -p "Enter the custom RPC URL: " CUSTOM_RPC
+                RPC_ENDPOINT="$CUSTOM_RPC"
+                echo "Using custom RPC: $RPC_ENDPOINT"
                 ;;
 
             5)
-                echo "Exiting..."
+                echo "Exiting the RPC change option."
                 exit 0
                 ;;
 
             *)
-                echo "Invalid option selected. Exiting."
+                echo "Invalid option. Exiting."
                 exit 1
                 ;;
         esac
@@ -179,11 +186,11 @@ case $option in
             echo "No running container found for the image nillion/verifier:v1.0.1. Ignoring..."
         fi
 
-        # Run the Verifier node with the selected RPC endpoint
-        echo "Starting the Nillion Verifier node with RPC endpoint: $RPC_ENDPOINT..."
-        docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "$RPC_ENDPOINT"
+        # Run the Verifier node with the selected or custom RPC
+        echo "Starting the Nillion Verifier node with the selected RPC endpoint..."
+        docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 verify --rpc-endpoint "$RPC_ENDPOINT"
 
-        echo "RPC change complete and running."
+        echo "Nillion Verifier node is now running with RPC endpoint: $RPC_ENDPOINT"
         ;;
 
     *)
