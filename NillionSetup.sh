@@ -19,6 +19,8 @@ echo "1. Install Node"
 echo "2. Update Node"
 echo "3. Change RPC"
 read -p "Enter the option number (1, 2, or 3): " option
+echo "You entered: $option"
+
 
 # Branch based on user selection
 case $option in
