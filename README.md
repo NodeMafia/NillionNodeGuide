@@ -23,7 +23,8 @@ Next you need nillion address, which you can copy to Keplr (format: nillion1tda.
 
 You can use the script from NodeMafia to easily install, update and manage RPC. Just use 
 ```
-curl -s https://raw.githubusercontent.com/NodeMafia/NillionNodeGuide/refs/heads/main/NillionSetup.sh | bash
+bash -i <(curl -sSL https://raw.githubusercontent.com/NodeMafia/NillionNodeGuide/refs/heads/main/NillionSetup.sh)
+
 ```
 and follow the instructions, or use the guide below.
 
