@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Check if the script is run in an interactive terminal
-if [ ! -t 0 ]; then
-    echo "This script requires an interactive terminal."
-    exit 1
-fi
-
 # Node Mafia ASCII Art
 echo "
      __             _                        __  _        
@@ -25,9 +19,13 @@ echo "1. Install Node"
 echo "2. Update Node"
 echo "3. Change RPC"
 
-# Use /dev/tty for reading input
+# Use /dev/tty for reading input if available, fallback to stdin
 echo "Waiting for user input..."
-read -p "Enter the option number (1, 2, or 3): " option < /dev/tty
+if [ -t 0 ]; then
+    read -p "Enter the option number (1, 2, or 3): " option < /dev/tty
+else
+    read -p "Enter the option number (1, 2, or 3): " option
+fi
 echo "You entered: $option"
 
 # Branch based on user selection
@@ -95,7 +93,7 @@ case $option in
         echo -e "\e[36mStop viewing logs:\e[0m CTRL+C"
 
         # Wait for user input
-        read -p "Press Enter to continue after completing the steps..." < /dev/tty
+        read -p "Press Enter to continue after completing the steps..." < /dev/tty || true
 
         # Synchronization timer with progress bar
         echo -e "\e[33mWaiting 5 minutes for synchronization...\e[0m"
@@ -156,7 +154,11 @@ case $option in
         echo "4. Custom RPC URL"
         echo "5. Exit"
         
-        read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option < /dev/tty
+        if [ -t 0 ]; then
+            read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option < /dev/tty
+        else
+            read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option
+        fi
 
         case $rpc_option in
             1)
@@ -175,7 +177,11 @@ case $option in
                 ;;
 
             4)
-                read -p "Enter the custom RPC URL: " CUSTOM_RPC < /dev/tty
+                if [ -t 0 ]; then
+                    read -p "Enter the custom RPC URL: " CUSTOM_RPC < /dev/tty
+                else
+                    read -p "Enter the custom RPC URL: " CUSTOM_RPC
+                fi
                 RPC_ENDPOINT="$CUSTOM_RPC"
                 echo "Using custom RPC: $RPC_ENDPOINT"
                 ;;
@@ -203,7 +209,7 @@ case $option in
         fi
 
         # Run the Verifier node with the selected or custom RPC
-        echo "Starting the Nillion Verifier node with RPC endpoint: $RPC_ENDPOINT"
+        echo "Starting the Nillion Verifier node with the selected RPC endpoint..."
         docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "$RPC_ENDPOINT"
 
         echo "RPC change complete."
