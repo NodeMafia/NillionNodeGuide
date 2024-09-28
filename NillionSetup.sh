@@ -18,12 +18,24 @@ RU Telegram: https://t.me/SixThoughtsLines
 GitHub: https://github.com/NodeMafia
 "
 
+# Function to read input safely
+read_input() {
+    # Check if stdin is from a terminal
+    if [ -t 0 ]; then
+        read -p "$1" input
+    else
+        echo "$1"
+        read input
+    fi
+    echo "$input"
+}
+
 # Menu for user selection
 echo "Please select an option:"
 echo "1. Install Node"
 echo "2. Update Node"
 echo "3. Change RPC"
-read -p "Enter the option number (1, 2, or 3): " option
+option=$(read_input "Enter the option number (1, 2, or 3): ")
 echo "You entered: $option"
 
 # Branch based on user selection
@@ -151,7 +163,7 @@ case $option in
         echo "3. Testnet RPC (KJNodes)"
         echo "4. Custom RPC URL"
         echo "5. Exit"
-        read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option
+        rpc_option=$(read_input "Enter the option number (1, 2, 3, 4, or 5): ")
 
         case $rpc_option in
             1)
@@ -174,7 +186,7 @@ case $option in
 
             4)
                 # Custom RPC URL
-                read -p "Enter the custom RPC URL: " CUSTOM_RPC
+                CUSTOM_RPC=$(read_input "Enter the custom RPC URL: ")
                 RPC_ENDPOINT="$CUSTOM_RPC"
                 echo "Using custom RPC: $RPC_ENDPOINT"
                 ;;
