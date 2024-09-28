@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Fix for input issue
-if [ -t 0 ]; then
-    exec < /dev/tty 
+# Check if the script is run in an interactive terminal
+if [ ! -t 0 ]; then
+    echo "This script requires an interactive terminal."
+    exit 1
 fi
 
 # Node Mafia ASCII Art
@@ -18,24 +19,15 @@ RU Telegram: https://t.me/SixThoughtsLines
 GitHub: https://github.com/NodeMafia
 "
 
-# Function to read input safely
-read_input() {
-    # Check if stdin is from a terminal
-    if [ -t 0 ]; then
-        read -p "$1" input
-    else
-        echo "$1"
-        read input
-    fi
-    echo "$input"
-}
-
 # Menu for user selection
 echo "Please select an option:"
 echo "1. Install Node"
 echo "2. Update Node"
 echo "3. Change RPC"
-option=$(read_input "Enter the option number (1, 2, or 3): ")
+
+# Use /dev/tty for reading input
+echo "Waiting for user input..."
+read -p "Enter the option number (1, 2, or 3): " option < /dev/tty
 echo "You entered: $option"
 
 # Branch based on user selection
@@ -103,7 +95,7 @@ case $option in
         echo -e "\e[36mStop viewing logs:\e[0m CTRL+C"
 
         # Wait for user input
-        read -p "Press Enter to continue after completing the steps..."
+        read -p "Press Enter to continue after completing the steps..." < /dev/tty
 
         # Synchronization timer with progress bar
         echo -e "\e[33mWaiting 5 minutes for synchronization...\e[0m"
@@ -163,36 +155,32 @@ case $option in
         echo "3. Testnet RPC (KJNodes)"
         echo "4. Custom RPC URL"
         echo "5. Exit"
-        rpc_option=$(read_input "Enter the option number (1, 2, 3, 4, or 5): ")
+        
+        read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option < /dev/tty
 
         case $rpc_option in
             1)
-                # Standard Testnet RPC (Lavenderfive)
                 echo "Using standard Testnet RPC: Lavenderfive."
                 RPC_ENDPOINT="https://testnet-nillion-rpc.lavenderfive.com"
                 ;;
 
             2)
-                # Testnet RPC (Polkachu)
                 echo "Using Testnet RPC: Polkachu."
                 RPC_ENDPOINT="https://nillion-testnet-rpc.polkachu.com/"
                 ;;
 
             3)
-                # Testnet RPC (KJNodes)
                 echo "Using Testnet RPC: KJNodes."
                 RPC_ENDPOINT="https://nillion-testnet.rpc.kjnodes.com/"
                 ;;
 
             4)
-                # Custom RPC URL
-                CUSTOM_RPC=$(read_input "Enter the custom RPC URL: ")
+                read -p "Enter the custom RPC URL: " CUSTOM_RPC < /dev/tty
                 RPC_ENDPOINT="$CUSTOM_RPC"
                 echo "Using custom RPC: $RPC_ENDPOINT"
                 ;;
 
             5)
-                # Exit
                 echo "Exiting the RPC change option."
                 exit 0
                 ;;
@@ -215,10 +203,10 @@ case $option in
         fi
 
         # Run the Verifier node with the selected or custom RPC
-        echo "Starting the Nillion Verifier node with the selected RPC endpoint..."
+        echo "Starting the Nillion Verifier node with RPC endpoint: $RPC_ENDPOINT"
         docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "$RPC_ENDPOINT"
 
-        echo "Nillion Verifier node is now running with RPC endpoint: $RPC_ENDPOINT"
+        echo "RPC change complete."
         ;;
 
     *)
