@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Fix for input issue
+if [ -t 0 ]; then
+    exec < /dev/tty 
+fi
+
 # Node Mafia ASCII Art
 echo "
      __             _                        __  _        
@@ -20,7 +25,6 @@ echo "2. Update Node"
 echo "3. Change RPC"
 read -p "Enter the option number (1, 2, or 3): " option
 echo "You entered: $option"
-
 
 # Branch based on user selection
 case $option in
