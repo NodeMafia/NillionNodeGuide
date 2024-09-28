@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Проверка текущей директории
+cd /path/to/your/desired/directory || { echo "Failed to change directory"; exit 1; }
+
 # Node Mafia ASCII Art
 echo "
      __             _                        __  _        
@@ -18,33 +21,20 @@ echo "Please select an option:"
 echo "1. Install Node"
 echo "2. Update Node"
 echo "3. Change RPC"
-
-# Use /dev/tty for reading input if available, fallback to stdin
-echo "Waiting for user input..."
-if [ -t 0 ]; then
-    read -p "Enter the option number (1, 2, or 3): " option < /dev/tty
-else
-    read -p "Enter the option number (1, 2, or 3): " option
-fi
+read -p "Enter the option number (1, 2, or 3): " option
 echo "You entered: $option"
 
 # Branch based on user selection
 case $option in
     1)
-        # Option 1: Install Node
         echo "You selected to install the Node."
 
         # Check if Docker is accessible
         if ! docker info > /dev/null 2>&1; then
             echo -e "\e[31mPermission denied: You don't have access to Docker.\e[0m"
             echo -e "\e[31mTrying to add user to the docker group...\e[0m"
-            
-            # Try to add user to the docker group
             sudo usermod -aG docker $USER
-
             echo -e "\e[32mUser added to the docker group. Please log out and log back in or restart the terminal.\e[0m"
-            echo -e "\e[32mOr you can run the script with 'sudo'.\e[0m"
-            
             exit 1
         else
             echo -e "\e[32mDocker is accessible. Proceeding...\e[0m"
@@ -68,18 +58,14 @@ case $option in
             PUBKEY=$(jq -r '.pub_key' $JSON_FILE)
 
             # Combined output instructions
-            echo -e "\n\e[31m!INSTRUCTIONS FOR USE!\e[0m"
+            echo -e "\n\e[31mInstructions for use\e[0m"
             echo -e "1. Go to the site: https://verifier.nillion.com/verifier and log in using your EVM wallet."
             echo -e "2. Press 'Set Up For Linux' and go to step 5: 'Initialising the verifier'"
-            
-            # Added message to copy information
             echo -e "\e[31mTo copy the information, highlight it with your cursor (do not press CTRL+C). The information will be copied after highlighting.\e[0m"
-            
             echo -e "   \e[36mVerifier Account ID:\e[0m = $ADDRESS"
             echo -e "   \e[36mVerifier Public Key:\e[0m = $PUBKEY"
             echo -e "3. Go to the \e[33mNillion Faucet\e[0m and get tokens to the address: \e[36m$ADDRESS\e[0m"
             echo -e "   Visit: https://faucet.testnet.nillion.com"
-            echo ""
         else
             echo -e "\e[31mError: credentials.json not found!\e[0m"
             exit 1
@@ -93,7 +79,7 @@ case $option in
         echo -e "\e[36mStop viewing logs:\e[0m CTRL+C"
 
         # Wait for user input
-        read -p "Press Enter to continue after completing the steps..." < /dev/tty || true
+        read -p "Press Enter to continue after completing the steps..."
 
         # Synchronization timer with progress bar
         echo -e "\e[33mWaiting 5 minutes for synchronization...\e[0m"
@@ -110,7 +96,6 @@ case $option in
         ;;
 
     2)
-        # Option 2: Update Node
         echo "You selected to update the Node."
 
         # Find and kill the running nillion/verifier container
@@ -143,7 +128,6 @@ case $option in
         ;;
 
     3)
-        # Option 3: Change RPC
         echo "You selected to change the RPC."
 
         # RPC selection before stopping the container
@@ -153,12 +137,7 @@ case $option in
         echo "3. Testnet RPC (KJNodes)"
         echo "4. Custom RPC URL"
         echo "5. Exit"
-        
-        if [ -t 0 ]; then
-            read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option < /dev/tty
-        else
-            read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option
-        fi
+        read -p "Enter the option number (1, 2, 3, 4, or 5): " rpc_option
 
         case $rpc_option in
             1)
@@ -173,26 +152,21 @@ case $option in
 
             3)
                 echo "Using Testnet RPC: KJNodes."
-                RPC_ENDPOINT="https://nillion-testnet.rpc.kjnodes.com/"
+                RPC_ENDPOINT="https://testnet.nillion.kjnodes.com/"
                 ;;
 
             4)
-                if [ -t 0 ]; then
-                    read -p "Enter the custom RPC URL: " CUSTOM_RPC < /dev/tty
-                else
-                    read -p "Enter the custom RPC URL: " CUSTOM_RPC
-                fi
-                RPC_ENDPOINT="$CUSTOM_RPC"
-                echo "Using custom RPC: $RPC_ENDPOINT"
+                read -p "Enter your custom RPC URL: " RPC_ENDPOINT
+                echo "Using custom RPC endpoint: $RPC_ENDPOINT"
                 ;;
 
             5)
-                echo "Exiting the RPC change option."
+                echo "Exiting..."
                 exit 0
                 ;;
 
             *)
-                echo "Invalid option. Exiting."
+                echo "Invalid option selected. Exiting."
                 exit 1
                 ;;
         esac
@@ -208,11 +182,11 @@ case $option in
             echo "No running container found for the image nillion/verifier:v1.0.1. Ignoring..."
         fi
 
-        # Run the Verifier node with the selected or custom RPC
-        echo "Starting the Nillion Verifier node with the selected RPC endpoint..."
+        # Run the Verifier node with the selected RPC endpoint
+        echo "Starting the Nillion Verifier node with RPC endpoint: $RPC_ENDPOINT..."
         docker run -v $(pwd)/nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "$RPC_ENDPOINT"
 
-        echo "RPC change complete."
+        echo "RPC change complete and running."
         ;;
 
     *)
