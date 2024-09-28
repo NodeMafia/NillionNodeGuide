@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Проверка текущей директории
-cd /path/to/your/desired/directory || { echo "Failed to change directory"; exit 1; }
-
 # Node Mafia ASCII Art
 echo "
      __             _                        __  _        
