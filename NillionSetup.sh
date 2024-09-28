@@ -67,7 +67,7 @@ case $option in
             echo -e "   Visit: https://faucet.testnet.nillion.com"
             echo ""
         else
-            echo -e "\e[31mError: credentials.json not found!\e[0m"
+            echo -e "\e[31mError: credentials.json not found\e[0m"
             exit 1
         fi
 
@@ -89,7 +89,7 @@ case $option in
         done
 
         # After the timer ends
-        echo -e "\n\e[32mSynchronization complete!\e[0m"
+        echo -e "\n\e[32mSynchronization complete\e[0m"
 
         # Run the Verifier node
         docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 verify --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com"
