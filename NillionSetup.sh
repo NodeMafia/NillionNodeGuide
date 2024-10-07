@@ -41,6 +41,13 @@ case $option in
         else
             echo -e "\e[32mDocker is accessible. Proceeding...\e[0m"
         fi
+        
+          # Check if jq is installed, if not install it
+        if ! command -v jq &> /dev/null; then
+            echo "jq is not installed. Installing jq..."
+            sudo apt update
+            sudo apt install -y jq
+        fi
 
         # Pull the Nillion verifier Docker image
         echo "Pulling Nillion verifier docker image..."
