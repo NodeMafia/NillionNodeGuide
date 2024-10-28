@@ -1,7 +1,9 @@
 # Nillion
+*Disclaimer: The author of this guide, which is exclusively informational material, does not bear any responsibility for the actions of readers. There are no fraudulent or spam links in the guide. All materials were obtained from official sources, links to which can be found at the end of each guide. This post is copyrighted by Nod Mafia.*
 
 ![image](https://github.com/user-attachments/assets/33731284-da4a-4068-b6fd-31c27671c810)
-  ## Nillion — a platform for decentralised data storage and processing based on the mathematically innovative Nil Message Compute (NMC) technology. This technology fundamentally changes the approach to data storage, processing and decentralisation, which will bring major changes to the landscape of the crypto-security world.
+
+## Nillion — a platform for decentralised data storage and processing based on the mathematically innovative Nil Message Compute (NMC) technology. This technology fundamentally changes the approach to data storage, processing and decentralisation, which will bring major changes to the landscape of the crypto-security world.
 $20,600,000 investment from Distributed Global, HashKey Capital, GSR, etc. Node requirements are 2CPU/4RAM/100SSD
 
 
