@@ -1,4 +1,4 @@
-# Nillion
+# Nillion. Verifier Node season ended 12.12.25!
 *Disclaimer: The author of this guide, which is exclusively informational material, does not bear any responsibility for the actions of readers. There are no fraudulent or spam links in the guide. All materials were obtained from official sources, links to which can be found at the end of each guide. This post is copyrighted by Nod Mafia.*
 
 ![image](https://github.com/user-attachments/assets/33731284-da4a-4068-b6fd-31c27671c810)
